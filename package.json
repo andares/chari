@@ -1,5 +1,5 @@
 {
-  "name": "chari",
+  "name": "@andares/chari",
   "version": "0.1.0",
   "description": "A TypeScript utility library exposing functions and classes.",
   "license": "MIT",
