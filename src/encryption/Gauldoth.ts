@@ -87,12 +87,12 @@ const decodeMarks = (packed: string, ivKey: Buffer): string => {
 // ----------------------------
 // 主工厂函数（全箭头）
 // ----------------------------
-interface Options {
+export interface Options {
   key: string;
   ivKey: string;
 }
 
-type SourceInput = string | Record<string, any> | null;
+export type SourceInput = string | Record<string, any> | null;
 
 /**
  * 创建 Gauldoth 加/解密器。
@@ -156,9 +156,10 @@ const create = ({ key, ivKey }: Options) => {
 
     if (dataRemaining) resultParts.push(dataRemaining);
 
-    // 将所有 mark 用独立密钥加密，并在前缀附 8 字节随机 IV
-    const marksEncrypted = encrypt3DES(ivMarks.join('|'), derivedIvKey, Buffer.from(randomAlpha(8), 'ascii'));
-    const packedMarks = randomAlpha(8) + marksEncrypted;
+    // 将所有 mark 用独立密钥加密，并在前缀附同一随机 IV（修复之前前后 IV 不一致导致解密失败问题）
+    const ivForMarks = randomAlpha(8);
+    const marksEncrypted = encrypt3DES(ivMarks.join('|'), derivedIvKey, Buffer.from(ivForMarks, 'ascii'));
+    const packedMarks = ivForMarks + marksEncrypted;
     return packedMarks + '|' + resultParts.join('');
   };
 
@@ -267,7 +268,5 @@ const create = ({ key, ivKey }: Options) => {
 };
 
 export default {
-  Options,
-  SourceInput,
   create,
 };

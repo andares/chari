@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       '@': srcDir,
       '@chari': srcDir,
+      '~': srcDir,
     },
   },
   test: {

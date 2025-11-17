@@ -44,3 +44,6 @@ export const randomAlpha = (length: number, mode: 'alpha' | 'alpha36' = 'alpha')
   }
   return result;
 };
+
+export const bin2hex = (buffer: Buffer): string => buffer.toString('hex');
+export const hex2bin = (hex: string): Buffer => Buffer.from(hex, 'hex');

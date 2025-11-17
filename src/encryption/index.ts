@@ -1,5 +1,1 @@
-import Gauldoth from './Gauldoth';
-
-export default {
-  Gauldoth,
-};
+export { default as Gauldoth } from './Gauldoth';
