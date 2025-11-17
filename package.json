@@ -1,0 +1,42 @@
+{
+  "name": "chari",
+  "version": "0.1.0",
+  "description": "A TypeScript utility library exposing functions and classes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --sourcemap --clean",
+    "dev": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --sourcemap --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "typescript",
+    "library",
+    "utils"
+  ],
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  }
+}
