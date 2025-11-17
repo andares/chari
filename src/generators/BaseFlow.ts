@@ -1,5 +1,6 @@
   // 支持的进制范围：2 - 62
-const DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  // 与 PHP GMP 基础字符顺序保持一致：0-9 a-z A-Z
+  const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const isValidBase = (base: number): boolean => base >= 2 && base <= 62;
 
@@ -41,17 +42,19 @@ export default class BaseFlow {
 
   constructor(value: string | number | bigint, base: number = 10) {
     if (base === 16) {
-      // Normalize hex: remove 0x, to lowercase
       this.hex = String(value).replace(/^0x/i, '').toLowerCase();
-      // Validate hex
       if (!/^[0-9a-f]+$/.test(this.hex)) {
         throw new Error('Invalid hex string');
       }
-    } else {
-      const bigVal = typeof value === 'bigint' ? value : BigInt(value);
-      const hexStr = bigVal.toString(16);
-      this.hex = hexStr;
+      return;
     }
+    if (!isValidBase(base)) {
+      throw new Error(`Base must be between 2 and 62, got ${base}`);
+    }
+    // 统一以字符串解析为指定进制（兼容 base62 与 base26 等）
+    const strVal = typeof value === 'bigint' ? value.toString() : String(value);
+    const bigVal = baseToBigint(strVal, base);
+    this.hex = bigVal.toString(16);
   }
 
   to = (base: number): string => {
