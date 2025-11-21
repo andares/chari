@@ -3,14 +3,13 @@ import { CryptoManager } from '~/encryption/CryptoManager';
 import * as crypto from 'node:crypto';
 
 describe('CryptoManager', () => {
-  it('pack/unpack preserves numeric value (前导零半字节/整字节可能丢失)', () => {
+  it('pack/unpack preserves numeric value via BigInt (前导零可能被压缩)', () => {
     const raw = crypto.randomBytes(16);
     const packed = CryptoManager.packKey(raw);
     const unpacked = CryptoManager.unpackKey(packed);
-    const originalHex = raw.toString('hex');
-    const normalizedHex = BigInt('0x' + originalHex).toString(16); // 模拟 GMP 去除前导 0
-    const normalizedBuf = Buffer.from(normalizedHex.length % 2 === 1 ? '0' + normalizedHex : normalizedHex, 'hex');
-    expect(unpacked.equals(normalizedBuf)).toBe(true);
+    const originalBig = BigInt('0x' + raw.toString('hex'));
+    const unpackBig = BigInt('0x' + unpacked.toString('hex'));
+    expect(unpackBig).toBe(originalBig);
   });
 
   it('generateMasterKey produces 32-byte raw key when unpacked', () => {
