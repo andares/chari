@@ -1,7 +1,8 @@
 # @andares/chari
 
 ![CI](https://github.com/andares/chari/actions/workflows/ci.yml/badge.svg?branch=master)
-![npm](https://img.shields.io/npm/v/%40andares%2Fchari)
+![version](https://img.shields.io/npm/v/%40andares%2Fchari?label=version)
+![pnpm](https://img.shields.io/badge/pnpm-enabled-FFD700?logo=pnpm&logoColor=white)
 ![license](https://img.shields.io/npm/l/%40andares%2Fchari)
 ![node](https://img.shields.io/node/v/%40andares%2Fchari)
 
