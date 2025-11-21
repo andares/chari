@@ -1,11 +1,20 @@
-# chari
+# @andares/chari
 
-一个使用 TypeScript 编写的轻量库，提供函数/类方法供其他项目复用。内置 `tsup` 构建与主流轻量测试框架 `Vitest`。
+![CI](https://github.com/andares/chari/actions/workflows/ci.yml/badge.svg?branch=master)
+![npm](https://img.shields.io/npm/v/%40andares%2Fchari)
+![license](https://img.shields.io/npm/l/%40andares%2Fchari)
+![node](https://img.shields.io/node/v/%40andares%2Fchari)
+
+TypeScript 工具库，包含：
+- `Gauldoth`：3DES 加解密与自定义打包/拆包
+- `BaseFlow`：2-62 进制转换、a-z Alpha 映射
+- `Obfus`：字符串简单混淆代码生成
+- `Utils`：随机字符串、二进制/十六进制互转
 
 ## 安装
 
 ```sh
-pnpm add chari
+pnpm add @andares/chari
 ```
 
 开发/构建与测试：
@@ -23,17 +32,32 @@ pnpm run test:coverage # 生成覆盖率报告（text/html/lcov 在 coverage/）
 ESM：
 
 ```ts
-import { sum, greet, Chari } from 'chari'
+import { Gauldoth, BaseFlow, Obfus, Utils } from '@andares/chari'
 
-console.log(sum(2, 3)) // 5
-console.log(greet('Chari')) // Hello, Chari!
-console.log(new Chari('Tester').hello()) // Hello, Tester!
+// Gauldoth
+const g = Gauldoth.create({ key: 'k1', ivKey: 'k2' })
+const token = g.encrypt({ uid: 1 })
+const text = g.decrypt(token)
+
+// BaseFlow
+const bf = new BaseFlow('ff', 16)
+bf.to(2) // '11111111'
+// Alpha 映射（注意：与 PHP GMP 行为一致，会丢弃前导 a）
+BaseFlow.fromAlpha('abcxyz').toAlpha() // 'bcxyz'
+
+// Obfus
+const code = Obfus.generateCode('Hello')
+// eval(code) === 'Hello'
+
+// Utils
+Utils.randomAlpha(8) // base62 字符串
+Utils.bin2hex(Buffer.from('hi')) // '6869'
 ```
 
 CommonJS：
 
 ```js
-const { sum, greet, Chari } = require('chari')
+const { Gauldoth, BaseFlow, Obfus, Utils } = require('@andares/chari')
 ```
 
 ## 开发
