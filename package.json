@@ -1,6 +1,6 @@
 {
   "name": "@andares/chari",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A TypeScript utility library exposing functions and classes.",
   "license": "MIT",
   "type": "module",
