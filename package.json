@@ -1,9 +1,14 @@
 {
   "name": "@andares/chari",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A TypeScript utility library exposing functions and classes.",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andares/chari.git"
+  },
+  "homepage": "https://github.com/andares/chari",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
