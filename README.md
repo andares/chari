@@ -7,14 +7,11 @@
 ![node](https://img.shields.io/node/v/%40andares%2Fchari)
 
 TypeScript 工具库，包含：
+
 - `Gauldoth`：3DES 加解密与自定义打包/拆包
 - `BaseFlow`：2-62 进制转换、a-z Alpha 映射
 - `Obfus`：字符串简单混淆代码生成
 - `Utils`：随机字符串、二进制/十六进制互转
-
-## Plan
-
-- [ ] 在GitHub中设置与NPM主仓关联
 
 ## 安装
 

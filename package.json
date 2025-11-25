@@ -1,6 +1,6 @@
 {
   "name": "@andares/chari",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A TypeScript utility library exposing functions and classes.",
   "license": "MIT",
   "type": "module",
@@ -44,5 +44,8 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.9"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.1.2"
   }
 }

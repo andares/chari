@@ -1,5 +1,5 @@
 import { Gauldoth, CryptoManager } from '~/encryption';
-import { BaseFlow, Obfus } from '~/generators';
+import { BaseFlow, ParamSimplifier, Obfus } from '~/generators';
 import * as Utils from '~/utils';
 
 // 具名导出（零散形式）
@@ -7,6 +7,7 @@ export {
   Gauldoth,
   CryptoManager,
   BaseFlow,
+  ParamSimplifier,
   Obfus,
   Utils,
 };
@@ -16,6 +17,7 @@ export default {
   Gauldoth,
   CryptoManager,
   BaseFlow,
+  ParamSimplifier,
   Obfus,
   Utils,
 };
