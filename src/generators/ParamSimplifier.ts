@@ -66,12 +66,12 @@ class ParamSimplifier {
           else {
             // 2.4.1 第3级是数组
             if (Array.isArray(firstItem)) {
-              normalized[key] = `[CO:${value.length}*]`;
+              normalized[key] = `[*CO:${value.length}*]`;
             }
             // 2.4.2 第3级是非数组复合类型
             else {
               const subKeys = Object.keys(firstItem).sort().join(',');
-              normalized[key] = `[CO:${subKeys}*]`;
+              normalized[key] = `[*CO:${subKeys}*]`;
             }
           }
         }

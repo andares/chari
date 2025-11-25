@@ -39,7 +39,7 @@ describe('ParamSimplifier', () => {
       emptyList: '[*LI:0*]',
       emptyObj: '[*RE:*]',
       filters: '[*RE:range,status*]',
-      items: '[CO:id,name,tags*]',
+      items: '[*CO:id,name,tags*]',
       mixedKeys: '[*RE:2,3,a,b*]',
       profile: '[*RE:history,id,metadata,preferences,settings,tags*]'
     });
@@ -58,8 +58,8 @@ describe('ParamSimplifier', () => {
     const cases: Array<{ input: any; expected: any }> = [
       { input: { a: [1, 2, 3] }, expected: { a: '[*LI:3*]' } },
       // 按当前实现：仅以第一个元素的键构建签名
-      { input: { a: [{ x: 1 }, { y: 2 }] }, expected: { a: '[CO:x*]' } },
-      { input: { a: [[1], [2]] }, expected: { a: '[CO:2*]' } },
+      { input: { a: [{ x: 1 }, { y: 2 }] }, expected: { a: '[*CO:x*]' } },
+      { input: { a: [[1], [2]] }, expected: { a: '[*CO:2*]' } },
       { input: { a: { b: 1, c: 2 } }, expected: { a: '[*RE:b,c*]' } },
       { input: { z: 1, a: 2 }, expected: { a: 2, z: 1 } }
     ];
