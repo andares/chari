@@ -2,106 +2,138 @@ import { encode, decode } from '@msgpack/msgpack';
 
 class ParamSimplifier {
   /**
-   * 类型守卫：检查是否为复合类型（对象或非空数组）
+   * 简单类型白名单 (非复合类型)
    */
-  private static isComposite(value: unknown): value is Record<string, unknown> | unknown[] {
+  private static isSimpleType(value: unknown): boolean {
     return (
-      value !== null &&
-      typeof value === 'object' &&
-      !ArrayBuffer.isView(value) &&
-      !(value instanceof Date)
+      value === null ||
+      value === undefined ||
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
     );
   }
 
   /**
-   * 检查数组是否为纯索引列表（连续数字索引）
+   * 检查是否为纯索引列表 (无字符串键)
    */
   private static isPureList(arr: unknown[]): boolean {
     if (arr.length === 0) return true;
 
-    // 检查所有键是否为连续数字 0..n-1
-    const keys = Object.keys(arr);
-    if (keys.length !== arr.length) return false;
+    // 检查是否只有数字索引且连续
+    const maxIndex = arr.length - 1;
+    for (let i = 0; i <= maxIndex; i++) {
+      if (!(i in arr)) return false;
+    }
 
-    return keys.every((key, index) => parseInt(key, 10) === index);
+    // 排除有字符串键的情况
+    return Object.keys(arr).every(key => !isNaN(Number(key)));
   }
 
   /**
-   * 核心简化逻辑：排序+裁剪
+   * 获取第一个非空元素 (用于异构列表)
    */
+  private static getFirstValidItem(items: unknown[]): unknown | null {
+    for (const item of items) {
+      if (item !== null && item !== undefined) return item;
+    }
+    return null;
+  }
+
+  /**
+   * 提取 Map 结构的键名 (按 UTF-8 字典序)
+   */
+  private static extractMapKeys(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      // 关联数组：过滤数字键
+      return Object.keys(value).filter(key => isNaN(Number(key)));
+    }
+
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      return Object.keys(value);
+    }
+
+    return [];
+  }
+
   static simplify(input: Record<string, unknown>): Record<string, unknown> {
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
       throw new Error('Input must be a non-null object');
     }
 
     const normalized: Record<string, unknown> = {};
-    const sortedKeys = Object.keys(input).sort();
+    const sortedKeys = Object.keys(input).sort((a, b) =>
+      a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' })
+    );
 
     for (const key of sortedKeys) {
       const value = input[key];
 
-      // 1. 简单类型直接保留
-      if (!this.isComposite(value)) {
-        normalized[key] = value;
+      // 1. 空容器统一处理
+      if (
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === 'object' && value !== null &&
+         !Array.isArray(value) && Object.keys(value).length === 0)
+      ) {
+        normalized[key] = '[*EM*]';
         continue;
       }
 
-      // 2. 处理数组类型
+      // 2. 处理数组
       if (Array.isArray(value)) {
-        // 2.1 空数组特殊处理
-        if (value.length === 0) {
-          normalized[key] = '[*LI:0*]';
-          continue;
-        }
-
-        // 2.2 判断是否为纯索引列表
+        // 2.1 纯索引列表
         if (this.isPureList(value)) {
-          const firstItem = value[0];
+          // 2.2 检查元素类型
+          const firstValid = this.getFirstValidItem(value);
 
-          // 2.3 非复合类型列表
-          if (!this.isComposite(firstItem)) {
+          if (firstValid === null || this.isSimpleType(firstValid)) {
+            // 简单列表
             normalized[key] = `[*LI:${value.length}*]`;
-          }
-          // 2.4 复合类型列表 - 检查第3级
-          else {
-            // 2.4.1 第3级是数组
-            if (Array.isArray(firstItem)) {
+          } else {
+            // 复合列表
+            if (!Array.isArray(firstValid) && typeof firstValid === 'object') {
+              // 元素是 Map
+              const subKeys = this.extractMapKeys(firstValid).sort((a, b) =>
+                a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' })
+              );
+              normalized[key] = `[*CO:${value.length}:${subKeys.join(',')}*]`;
+            } else {
+              // 元素是非Map复合类型 (数组/其他)
               normalized[key] = `[*CO:${value.length}*]`;
             }
-            // 2.4.2 第3级是非数组复合类型
-            else {
-              const subKeys = Object.keys(firstItem).sort().join(',');
-              normalized[key] = `[*CO:${subKeys}*]`;
-            }
           }
         }
-        // 2.5 非纯列表（关联数组）
+        // 2.3 非纯列表 = 关联数组
         else {
-          const subKeys = Object.keys(value).sort().join(',');
-          normalized[key] = `[*RE:${subKeys}*]`;
+          const subKeys = this.extractMapKeys(value).sort((a, b) =>
+            a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' })
+          );
+          normalized[key] = `[*RE:${subKeys.join(',')}*]`;
         }
         continue;
       }
 
       // 3. 非数组的复合对象
-      const subKeys = Object.keys(value).sort().join(',');
-      normalized[key] = `[*RE:${subKeys}*]`;
+      if (typeof value === 'object' && value !== null) {
+        const subKeys = Object.keys(value).sort((a, b) =>
+          a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' })
+        );
+        normalized[key] = `[*RE:${subKeys.join(',')}*]`;
+      }
+      // 4. 简单类型直接保留
+      else {
+        normalized[key] = value;
+      }
     }
 
     return normalized;
   }
 
-  /**
-   * 编码：简化 + msgpack 序列化
-   */
   static encode(input: Record<string, unknown>): Uint8Array {
     const simplified = this.simplify(input);
     return encode(simplified);
   }
 
-  /**
-   * 解码：仅反序列化 msgpack 数据
-   */
   static decode(buffer: Uint8Array): Record<string, unknown> {
     return decode(buffer) as Record<string, unknown>;
   }
