@@ -1,18 +1,42 @@
-import { Gauldoth, CryptoManager } from '~/encryption';
-import { BaseFlow, ParamSimplifier, Obfus } from '~/generators';
-import * as Utils from '~/utils';
+// Pure TypeScript implementations
+import { Gauldoth } from '~/encryption';
+import { Obfus as ObfusTS } from '~/generators';
 
-// 具名导出（零散形式）
+// WASM-powered implementations (preferred for performance)
+import {
+  BaseFlow,
+  CryptoManager,
+  ParamSimplifier,
+  randomAlpha,
+  bin2hex,
+  hex2bin,
+  generateCode as generateCodeWasm,
+} from '~/wasm';
+
+// Re-export Utils with WASM functions
+export const Utils = {
+  randomAlpha,
+  bin2hex,
+  hex2bin,
+};
+
+// Re-export Obfus with WASM implementation
+export const Obfus = {
+  generateCode: generateCodeWasm,
+};
+
+// Re-export other modules
 export {
   Gauldoth,
   CryptoManager,
   BaseFlow,
   ParamSimplifier,
-  Obfus,
-  Utils,
 };
 
-// 默认导出聚合对象
+// Legacy TypeScript-only exports (for backward compatibility)
+export { Obfus as ObfusTS } from '~/generators';
+
+// Default export aggregation
 export default {
   Gauldoth,
   CryptoManager,

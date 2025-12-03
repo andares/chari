@@ -5,3 +5,6 @@ dist/
 *.log
 tmp/
 coverage/
+wasm/target/
+wasm/pkg/
+wasm/Cargo.lock

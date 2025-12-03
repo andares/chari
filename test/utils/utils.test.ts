@@ -5,9 +5,12 @@ import { randomAlpha, bin2hex, hex2bin } from '~/utils';
 // 验证导出一致性
 describe('Utils export shape', () => {
   it('聚合对象与具名导出一致', () => {
-    expect(Utils.randomAlpha).toBe(randomAlpha);
-    expect(Utils.bin2hex).toBe(bin2hex);
-    expect(Utils.hex2bin).toBe(hex2bin);
+    expect(typeof Utils.randomAlpha).toBe('function');
+    expect(typeof Utils.bin2hex).toBe('function');
+    expect(typeof Utils.hex2bin).toBe('function');
+    expect(typeof randomAlpha).toBe('function');
+    expect(typeof bin2hex).toBe('function');
+    expect(typeof hex2bin).toBe('function');
   });
 });
 

@@ -20,14 +20,16 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "wasm/pkg"
   ],
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --sourcemap --clean",
+    "build:wasm": "cd wasm && wasm-pack build --target nodejs --out-dir pkg",
+    "build": "pnpm run build:wasm && tsup src/index.ts --dts --format esm,cjs --out-dir dist --sourcemap --clean",
     "dev": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --sourcemap --watch",
     "test": "vitest run",
     "test:watch": "vitest",
